@@ -6,19 +6,24 @@ const Button = ({ text, clickHandler }) => (
 )
 
 const Statistic = ({ label, value }) => (
-  <div>
-    <p>{label}: {value}</p>
-  </div>
+  <tr>
+    <td>{label}</td>
+    <td>{value}</td>
+  </tr>
 )
 
 const Statistics = props => {
   if (props.total > 0) {
     return (
       <div>
-        {props.votes.map((s, i) => <Statistic key={i} label={s.name} value={s.value} />)}
-        <Statistic label='Yhteensä' value={props.total} />
-        <Statistic label='Keskiarvo' value={props.avg} />
-        <Statistic label='Positiivisia' value={Math.round(props.pp * 100) + ' %'} />
+        <table>
+          <tbody>
+            {props.votes.map((s, i) => <Statistic key={i} label={s.name} value={s.value} />)}
+            <Statistic label='Yhteensä' value={props.total} />
+            <Statistic label='Keskiarvo' value={props.avg} />
+            <Statistic label='Positiivisia' value={Math.round(props.pp * 100) + ' %'} />
+          </tbody>
+        </table>
       </div>
     )
   }
