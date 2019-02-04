@@ -3,6 +3,7 @@ import AddPersonForm from './components/AddPersonForm'
 import Filter from './components/Filter'
 import Person from './components/Person'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,10 +11,20 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [notificationMsg, setNotificationMsg] = useState({})
+  const [notificationVisible, setNotificationVisible] = useState(false)
 
   useEffect(() => {
     updateAllPersons()
   }, [])
+
+  useEffect(() => {
+    if (!notificationMsg.msg) return
+    setNotificationVisible(true)
+    setTimeout(() => {
+      setNotificationVisible(false)
+    }, 4000)
+  }, [notificationMsg])
 
   const updateAllPersons = () => {
     personService
@@ -21,7 +32,9 @@ const App = () => {
       .then(fetchedPersons => {
         setPersons(fetchedPersons)
         setShownPersons(fetchedPersons)
-      }).catch(err => console.log(err))
+      }).catch(() => {
+        setNotificationMsg({msg: `Henkilöiden haussa tapahtui virhe!`, isBad: true})
+      })
   }
 
   const updateFilterField = (e) => {
@@ -44,8 +57,13 @@ const App = () => {
     }
     personService
       .deletePerson(person.id)
-      .then(() => updateAllPersons())
-      .catch(err => console.log(err))
+      .then(() => {
+        updateAllPersons()
+        setNotificationMsg({msg: `Poistettiin henkilö ${person.name}`, isBad: false})
+      })
+      .catch(() => {
+        setNotificationMsg({msg: `Henkilön poisto epäonnistui!`, isBad: true})
+      })
   }
 
   const addNewPerson = (e) => {
@@ -58,19 +76,24 @@ const App = () => {
       personService
         .updatePerson({ name: newName, number: newNumber, id: personId })
         .then(person => {
-          console.log(`updated ${person.name}`)
+         setNotificationMsg({msg: `Päivitettiin henkilön ${person.name} tiedot.`})
           updateAllPersons()
         })
-        .catch(err => console.log(err))
+        .catch(() => {
+          setNotificationMsg({msg: `Henkilön päivitys epäonnistui!`, isBad: true})
+        })
       return
     }
     const newPerson = { name: newName, number: newNumber }
     personService
       .addNewPerson(newPerson)
-      .then(adedPerson => {
-        const newPersons = persons.concat(adedPerson)
+      .then(addedPerson => {
+        const newPersons = persons.concat(addedPerson)
         setPersons(newPersons)
         setShownPersons(newPersons)
+        setNotificationMsg({msg: `Lisättiin henkilö ${addedPerson.name}`})
+      }).catch(() => {
+        setNotificationMsg({msg: `Henkilön lisäys epäonnistui!`, isBad: true})
       })
     setNewName('')
     setNewNumber('')
@@ -86,6 +109,7 @@ const App = () => {
 
   return (
     <div>
+      {notificationVisible ? <Notification msg={notificationMsg.msg} isBad={notificationMsg.isBad} /> : null}
       <h2>Puhelinluettelo</h2>
       <Filter text={newFilter} handler={updateFilterField} />
       <AddPersonForm
