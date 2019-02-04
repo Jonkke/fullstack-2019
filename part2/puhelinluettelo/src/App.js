@@ -33,7 +33,7 @@ const App = () => {
         setPersons(fetchedPersons)
         setShownPersons(fetchedPersons)
       }).catch(() => {
-        setNotificationMsg({msg: `Henkilöiden haussa tapahtui virhe!`, isBad: true})
+        setNotificationMsg({ msg: `Henkilöiden haussa tapahtui virhe!`, isBad: true })
       })
   }
 
@@ -59,10 +59,16 @@ const App = () => {
       .deletePerson(person.id)
       .then(() => {
         updateAllPersons()
-        setNotificationMsg({msg: `Poistettiin henkilö ${person.name}`, isBad: false})
+        setNotificationMsg({ msg: `Poistettiin henkilö ${person.name}`, isBad: false })
       })
-      .catch(() => {
-        setNotificationMsg({msg: `Henkilön poisto epäonnistui!`, isBad: true})
+      .catch((e) => {
+        console.log(e)
+        if (e.response.status === 404) {
+          setNotificationMsg({ msg: `Henkilö oli jo poistettu.`, isBad: true })
+          updateAllPersons()
+        } else {
+          setNotificationMsg({ msg: `Virhe henkilön poistossa!`, isBad: true })
+        }
       })
   }
 
@@ -76,11 +82,16 @@ const App = () => {
       personService
         .updatePerson({ name: newName, number: newNumber, id: personId })
         .then(person => {
-         setNotificationMsg({msg: `Päivitettiin henkilön ${person.name} tiedot.`})
+          setNotificationMsg({ msg: `Päivitettiin henkilön ${person.name} tiedot.` })
           updateAllPersons()
         })
-        .catch(() => {
-          setNotificationMsg({msg: `Henkilön päivitys epäonnistui!`, isBad: true})
+        .catch((e) => {
+          if (e.response.status === 404) {
+            setNotificationMsg({ msg: `Henkilön tietoja ei löydy, ne on luultavasti poistettu.`, isBad: true })
+            updateAllPersons()
+          } else {
+            setNotificationMsg({ msg: `Virhe henkilön tietojen päivityksessä`, isBad: true })
+          }
         })
       return
     }
@@ -91,9 +102,9 @@ const App = () => {
         const newPersons = persons.concat(addedPerson)
         setPersons(newPersons)
         setShownPersons(newPersons)
-        setNotificationMsg({msg: `Lisättiin henkilö ${addedPerson.name}`})
+        setNotificationMsg({ msg: `Lisättiin henkilö ${addedPerson.name}` })
       }).catch(() => {
-        setNotificationMsg({msg: `Henkilön lisäys epäonnistui!`, isBad: true})
+        setNotificationMsg({ msg: `Virhe henkilön lisäyksessä.`, isBad: true })
       })
     setNewName('')
     setNewNumber('')
