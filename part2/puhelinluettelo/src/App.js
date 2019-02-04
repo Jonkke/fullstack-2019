@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AddPersonForm from './components/AddPersonForm'
 import Filter from './components/Filter'
 import Person from './components/Person'
-import axios from 'axios'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,13 +12,17 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(res => {
-        setPersons(res.data)
-        setShownPersons(res.data)
-      }).catch(err => console.log(err))
+    updateAllPersons()
   }, [])
+
+  const updateAllPersons = () => {
+    personService
+      .getAllPersons()
+      .then(fetchedPersons => {
+        setPersons(fetchedPersons)
+        setShownPersons(fetchedPersons)
+      }).catch(err => console.log(err))
+  }
 
   const updateFilterField = (e) => {
     const filterText = e.target.value
@@ -34,16 +38,40 @@ const App = () => {
     setNewNumber(e.target.value)
   }
 
+  const deletePerson = person => () => {
+    if (!window.confirm(`Poistetaanko ${person.name}?`)) {
+      return
+    }
+    personService
+      .deletePerson(person.id)
+      .then(() => updateAllPersons())
+      .catch(err => console.log(err))
+  }
+
   const addNewPerson = (e) => {
     e.preventDefault()
     if (persons.find(p => p.name === newName)) {
-      alert(`${newName} on jo luettelossa!`)
+      if (!window.confirm(`${newName} on jo luettelossa, korvataanko vanha numero uudella?`)) {
+        return
+      }
+      const personId = persons.find(p => p.name === newName).id
+      personService
+        .updatePerson({ name: newName, number: newNumber, id: personId })
+        .then(person => {
+          console.log(`updated ${person.name}`)
+          updateAllPersons()
+        })
+        .catch(err => console.log(err))
       return
     }
-    const newPerson = { name: newName, number: newNumber, id: persons.length + 1 }
-    const newPersons = persons.concat(newPerson)
-    setPersons(newPersons)
-    setShownPersons(newPersons)
+    const newPerson = { name: newName, number: newNumber }
+    personService
+      .addNewPerson(newPerson)
+      .then(adedPerson => {
+        const newPersons = persons.concat(adedPerson)
+        setPersons(newPersons)
+        setShownPersons(newPersons)
+      })
     setNewName('')
     setNewNumber('')
     setNewFilter('')
@@ -69,7 +97,7 @@ const App = () => {
       />
       <h2>Numerot</h2>
       <div>
-        {shownPersons.map(p => <Person key={p.id} name={p.name} num={p.number} />)}
+        {shownPersons.map(p => <Person key={p.id} name={p.name} num={p.number} deleteHandler={deletePerson(p)} />)}
       </div>
     </div>
   )
