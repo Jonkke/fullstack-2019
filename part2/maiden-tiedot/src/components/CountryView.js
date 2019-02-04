@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const CountryView = ({ countries }) => {
   const [picked, setPicked] = useState(null)
+  const [weatherData, setWeatherData] = useState({})
   useEffect(() => {
     setPicked(null)
+    setWeatherData({})
   }, [countries])
+  useEffect(() => {
+    if (picked &&
+      Object.entries(weatherData).length === 0 && weatherData.constructor === Object) {
+      axios.get(`http://api.apixu.com/v1/current.json?key=${process.env.REACT_APP_APIXU_KEY}=${picked.capital}`)
+        .then(res => setWeatherData(res.data.current)).catch(err => console.log(err))
+    }
+  }, [picked])
 
   const pickCountry = c => () => {
     setPicked(c)
@@ -23,6 +33,9 @@ const CountryView = ({ countries }) => {
           {c.languages.map(l => <li key={l.name}>{l.name}</li>)}
         </ul>
         <img width={100} src={c.flag} alt={"flag of" + c.name} />
+        <h3>Weather in {c.capital}</h3>
+        <p>Temperature: {weatherData.temp_c}</p>
+        <p>Wind: {weatherData.wind_kph} kph, direction {weatherData.wind_dir} </p>
       </div>
     )
   }
