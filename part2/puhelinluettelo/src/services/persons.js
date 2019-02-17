@@ -9,7 +9,6 @@ const getAllPersons = () => {
 }
 
 const addNewPerson = person => {
-  console.log(person)
   return axios
     .post(baseUrl, person)
     .then(res => res.data)

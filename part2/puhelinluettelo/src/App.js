@@ -90,7 +90,7 @@ const App = () => {
             setNotificationMsg({ msg: `Henkilön tietoja ei löydy, ne on luultavasti poistettu.`, isBad: true })
             updateAllPersons()
           } else {
-            setNotificationMsg({ msg: `Virhe henkilön tietojen päivityksessä`, isBad: true })
+            setNotificationMsg({ msg: `${e.response.data}`, isBad: true })
           }
         })
       return
@@ -103,8 +103,8 @@ const App = () => {
         setPersons(newPersons)
         setShownPersons(newPersons)
         setNotificationMsg({ msg: `Lisättiin henkilö ${addedPerson.name}` })
-      }).catch(() => {
-        setNotificationMsg({ msg: `Virhe henkilön lisäyksessä.`, isBad: true })
+      }).catch(e => {
+        setNotificationMsg({ msg: `${e.response.data.error}`, isBad: true })
       })
     setNewName('')
     setNewNumber('')
