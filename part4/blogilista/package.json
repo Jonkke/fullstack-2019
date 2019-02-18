@@ -6,12 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "watch": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --verbose"
   },
   "author": "Jonkke",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^5.14.0",
+    "jest": "^24.1.0",
     "nodemon": "^1.18.10"
   },
   "dependencies": {
