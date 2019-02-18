@@ -46,3 +46,21 @@ describe('favorite blog', () => {
     expect(listHelper.favoriteBlog([])).toBe(undefined)
   })
 })
+
+describe('author with most blogs', () => {
+  test('is returned from a list of authors', () => {
+    expect(listHelper.mostBlogs(manyBlogs)).toEqual({"author": "Robert C. Martin", "blogs": 3})
+  })
+  test('is undefined if the passed list is empty', () => {
+    expect(listHelper.mostBlogs([])).toBe(undefined)
+  })
+})
+
+describe('author with most likes', () => {
+  test('is returned from a list of authors', () => {
+    expect(listHelper.mostLikes(manyBlogs)).toEqual({"author": "Edsger W. Dijkstra", "likes": 17})
+  })
+  test('is undefined if the passed list is empty', () => {
+    expect(listHelper.mostLikes([])).toBe(undefined)
+  })
+})
