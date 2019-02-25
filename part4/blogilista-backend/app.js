@@ -4,6 +4,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const requestLogger = require('./utils/logger')
 
 const { tokenExtractor, errorHandler } = require('./utils/middleware')
 
@@ -25,6 +26,8 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true })
   })
 
 app.use(tokenExtractor)
+
+app.use(requestLogger)
 
 app.use('/api/login', loginRouter)
 app.use('/api/blogs', blogsRouter)
