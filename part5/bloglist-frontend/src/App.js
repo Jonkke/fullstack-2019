@@ -79,7 +79,7 @@ const App = () => {
         <div className={'notification-container'}>
           <Notification message={notificationMsg} isError={notificationIsError} />
         </div>
-        <h2>Log in to application</h2>
+        <h2 className={'loginHeader'}>Log in to application</h2>
         <form>
           username
           <input
