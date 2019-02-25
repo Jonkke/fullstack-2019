@@ -5,8 +5,8 @@ import PropTypes from 'prop-types'
 const Blog = ({ blog, updateBlogs }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const username= JSON.parse(window.localStorage.loggedUser).username
-  const blogIsByCurrentUser = blog.user.username === username
+  const username = !window.localStorage.loggedUser ? undefined : JSON.parse(window.localStorage.loggedUser).username
+  const blogIsByCurrentUser = !blog.user ? false : blog.user.username === username
 
   const toggleIsExpanded = () => {
     setIsExpanded(!isExpanded)
@@ -28,8 +28,8 @@ const Blog = ({ blog, updateBlogs }) => {
 
   if (!isExpanded) {
     return (
-      <div style={blogStyle} className={'blog-container'} >
-        <p style={{ ...paragStyle, ...titleStyle }} onClick={toggleIsExpanded}>{blog.title}</p>
+      <div style={blogStyle} className={'blog-container nonexpanded'} >
+        <p className={'title'} style={{ ...paragStyle, ...titleStyle }} onClick={toggleIsExpanded}>{blog.title}</p>
       </div>
     )
   } else {
