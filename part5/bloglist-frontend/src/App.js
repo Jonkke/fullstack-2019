@@ -5,17 +5,19 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+import { useField } from './hooks'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [notificationMsg, setSNotificationMsg] = useState('')
   const [notificationIsError, setNotificationIsError] = useState('')
+  const username = useField('text')
+  const password = useField('password')
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
-      const sortedBlogs = blogs.sort((b1, b2) => (b2.likes-b1.likes))
+      const sortedBlogs = blogs.sort((b1, b2) => (b2.likes - b1.likes))
       setBlogs(sortedBlogs)
     })
   }, [])
@@ -41,15 +43,18 @@ const App = () => {
   const loginHandler = async event => {
     event.preventDefault()
     try {
-      const userCreds = await loginService.login({ username, password })
+      const userCreds = await loginService.login({
+        username: username.value,
+        password: password.value
+      })
       window.localStorage.setItem(
         'loggedUser', JSON.stringify(userCreds)
       )
       blogService.setToken(userCreds.token)
       setUser(userCreds)
-      setUsername('')
-      setPassword('')
-      setNotification(`Successfully logged in as ${username}`, false, 3500)
+      username.reset()
+      password.reset()
+      setNotification(`Successfully logged in as ${username.value}`, false, 3500)
     } catch (err) {
       setNotification('Invalid username or password', true, 3500)
     }
@@ -62,7 +67,7 @@ const App = () => {
 
   const updateBlogs = () => {
     blogService.getAll().then(blogs => {
-      const sortedBlogs = blogs.sort((b1, b2) => (b2.likes-b1.likes))
+      const sortedBlogs = blogs.sort((b1, b2) => (b2.likes - b1.likes))
       setBlogs(sortedBlogs)
     })
   }
@@ -78,17 +83,11 @@ const App = () => {
         <form>
           username
           <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={e => setUsername(e.target.value)}
+            {...username.spread()}
           />
           password
           <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={e => setPassword(e.target.value)}
+            {...password.spread()}
           />
           <input type="button" onClick={e => loginHandler(e)} value="Log in" />
         </form>

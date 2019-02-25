@@ -1,19 +1,21 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
 
+import { useField } from '../hooks'
+
 const AddBlogForm = ({ setNotification, updateBlogs }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const title = useField('text')
+  const author = useField('text')
+  const url = useField('text')
   const [isVisible, setIsVisible] = useState(false)
 
   const addBlogHandler = async (e) => {
     e.preventDefault()
     try {
       await blogService.addNewBlog({
-        title,
-        author,
-        url,
+        title: title.value,
+        author: author.value,
+        url: url.value,
         likes: 0
       })
       updateBlogs()
@@ -32,9 +34,9 @@ const AddBlogForm = ({ setNotification, updateBlogs }) => {
       <div className={'addblogform-container'}>
         <h5>Add new blog:</h5>
         <form>
-          Title: <input type="text" name="title" value={title} onChange={e => setTitle(e.target.value)} />
-          Author: <input type="text" name="author" value={author} onChange={e => setAuthor(e.target.value)} />
-          URL: <input type="text" name="url" value={url} onChange={e => setUrl(e.target.value)} />
+          Title: <input {...title.spread()} />
+          Author: <input {...author.spread()} />
+          URL: <input {...url.spread()} />
           <input type="button" value="Add new blog!" onClick={e => addBlogHandler(e)} />
         </form>
         <button onClick={toggleVisibility}>Close</button>
