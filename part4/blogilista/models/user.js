@@ -4,7 +4,9 @@ const uniqueValidator = require('mongoose-unique-validator')
 const userSchema = mongoose.Schema({
   username: {
     type: String,
-    unique: true
+    unique: true,
+    minlength: 3,
+    present: true
   },
   name: String,
   passwordHash: String,
@@ -13,7 +15,7 @@ const userSchema = mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Blog'
     }
-  ]
+  ],
 })
 
 userSchema.plugin(uniqueValidator)
@@ -27,6 +29,6 @@ userSchema.set('toJSON', {
   }
 })
 
-const User = mongoose.model('user', userSchema)
+const User = mongoose.model('BlogUser', userSchema)
 
 module.exports = User

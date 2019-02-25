@@ -3,13 +3,14 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 let PORT = process.env.PORT
-let MONGO_URL = process.env.MONGO_URL
+let MONGODB_URI = process.env.MONGODB_URI
 
 if (process.env.NODE_ENV === 'test') {
-  MONGO_URL = process.env.TEST_MONGODB_URI
+  PORT = process.env.TEST_PORT
+  MONGODB_URI = process.env.TEST_MONGODB_URI
 }
 
 module.exports = {
-  PORT,
-  MONGO_URL
+  MONGODB_URI,
+  PORT
 }

@@ -1,35 +1,38 @@
+const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
-const bcrypt = require('bcrypt')
-const logger = require('../utils/logger')
 
-usersRouter.get('/', async (req, res) => {
-  const users = await User.find({})
-  res.json(users.map(u => u.toJSON()))
+usersRouter.get('/', async (request, response) => {
+  const users = await User
+    .find({}).populate('blogs', { author: 1, title: 1, url: 1 })
+
+  response.json(users.map(u => u.toJSON()))
 })
 
-usersRouter.post('/', async (req, res) => {
+usersRouter.post('/', async (request, response, next) => {
   try {
-    const body = req.body
-    if (!(body.username && body.password)) {
-      return res.status(400).json({ error: 'Username or password missing!' })
-    }
-    if (body.username.length < 3 || body.password.length < 3) {
-      return res.status(400).json({ error: 'Username and password must be at least 3 character long!' })
+    const { username, password, name } = request.body
+
+    if (!password || password.length<3 ) {
+      return response.status(400).send({
+        error: 'pasword minimum length 3'
+      })
     }
 
     const saltRounds = 10
-    const pwHash = await bcrypt.hash(body.password, saltRounds)
+    const passwordHash = await bcrypt.hash(password, saltRounds)
 
     const user = new User({
-      username: body.username,
-      name: body.name,
-      passwordHash: pwHash
+      username,
+      name,
+      passwordHash,
     })
+
     const savedUser = await user.save()
-    res.json(savedUser)
+
+    response.json(savedUser)
   } catch (exception) {
-    logger.error(exception)
+    next(exception)
   }
 })
 
