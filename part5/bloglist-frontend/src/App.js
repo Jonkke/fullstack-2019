@@ -66,7 +66,7 @@ const App = () => {
       setBlogs(sortedBlogs)
     })
   }
-  
+
 
   if (user === null) {
     return (

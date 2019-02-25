@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, updateBlogs }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -7,7 +8,7 @@ const Blog = ({ blog, updateBlogs }) => {
   const username= JSON.parse(window.localStorage.loggedUser).username
   const blogIsByCurrentUser = blog.user.username === username
 
-  const toggleIsExpanded = (e) => {
+  const toggleIsExpanded = () => {
     setIsExpanded(!isExpanded)
   }
 
@@ -59,6 +60,11 @@ const titleStyle = {
 const paragStyle = {
   padding: 0,
   margin: 0
+}
+
+Blog.propTypes = {
+  updateBlogs: PropTypes.func.isRequired,
+  blog: PropTypes.object.isRequired
 }
 
 
